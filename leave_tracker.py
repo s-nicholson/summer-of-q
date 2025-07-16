@@ -1,0 +1,168 @@
+#!/usr/bin/env python3
+import argparse
+import json
+import os
+from datetime import datetime, date
+from pathlib import Path
+
+CONFIG_FILE = Path.home() / '.leave_tracker_config.json'
+DATA_FILE = Path.home() / '.leave_tracker_data.json'
+
+def get_leave_year(target_date):
+    """Get leave year (Sept 1 - Aug 31) for a given date"""
+    if target_date.month >= 9:
+        return target_date.year
+    return target_date.year - 1
+
+def load_config():
+    if not CONFIG_FILE.exists():
+        print("No configuration found. Run 'setup' command first.")
+        exit(1)
+    with open(CONFIG_FILE) as f:
+        return json.load(f)
+
+def load_data():
+    if not DATA_FILE.exists():
+        return {}
+    with open(DATA_FILE) as f:
+        return json.load(f)
+
+def save_data(data):
+    with open(DATA_FILE, 'w') as f:
+        json.dump(data, f, indent=2)
+
+def setup(args):
+    config = {
+        'hours_per_period': args.hours_per_period,
+        'hours_per_day': args.hours_per_day,
+        'carryover_hours': args.carryover_hours
+    }
+    with open(CONFIG_FILE, 'w') as f:
+        json.dump(config, f, indent=2)
+    print("Configuration saved.")
+
+def add_leave(args):
+    config = load_config()
+    data = load_data()
+    
+    leave_date = datetime.strptime(args.date, '%Y-%m-%d').date()
+    year = get_leave_year(leave_date)
+    
+    if str(year) not in data:
+        data[str(year)] = []
+    
+    entry = {
+        'date': args.date,
+        'hours': args.hours,
+        'description': args.description
+    }
+    data[str(year)].append(entry)
+    save_data(data)
+    print(f"Added {args.hours}h leave on {args.date}: {args.description}")
+
+def remove_leave(args):
+    data = load_data()
+    target_date = datetime.strptime(args.date, '%Y-%m-%d').date()
+    year = get_leave_year(target_date)
+    
+    if str(year) not in data:
+        print("No leave entries found for that date.")
+        return
+    
+    entries = data[str(year)]
+    for i, entry in enumerate(entries):
+        if entry['date'] == args.date:
+            removed = entries.pop(i)
+            save_data(data)
+            print(f"Removed {removed['hours']}h leave on {args.date}: {removed['description']}")
+            return
+    
+    print("No leave entry found for that date.")
+
+def list_leave(args):
+    config = load_config()
+    data = load_data()
+    current_year = get_leave_year(date.today())
+    
+    if str(current_year) not in data:
+        print("No leave entries for current year.")
+        return
+    
+    entries = sorted(data[str(current_year)], key=lambda x: x['date'])
+    today = date.today()
+    
+    print(f"\nLeave entries for {current_year}-{current_year+1}:")
+    print("-" * 50)
+    
+    for entry in entries:
+        entry_date = datetime.strptime(entry['date'], '%Y-%m-%d').date()
+        status = "PAST" if entry_date < today else "FUTURE"
+        print(f"{entry['date']} | {entry['hours']:2}h | {status:6} | {entry['description']}")
+
+def balance(args):
+    config = load_config()
+    data = load_data()
+    current_year = get_leave_year(date.today())
+    
+    # Calculate total allowance for the year
+    periods_per_year = 24  # 2 periods per month * 12 months
+    annual_allowance = config['hours_per_period'] * periods_per_year + config['carryover_hours']
+    
+    # Calculate used leave
+    used_hours = 0
+    if str(current_year) in data:
+        used_hours = sum(entry['hours'] for entry in data[str(current_year)])
+    
+    current_balance = annual_allowance - used_hours
+    
+    print(f"\nLeave Balance for {current_year}-{current_year+1}:")
+    print(f"Annual allowance: {annual_allowance}h")
+    print(f"Used so far: {used_hours}h")
+    print(f"Current balance: {current_balance}h")
+    print(f"Balance in days: {current_balance / config['hours_per_day']:.1f}")
+
+def main():
+    parser = argparse.ArgumentParser(description='Annual Leave Tracker')
+    subparsers = parser.add_subparsers(dest='command', help='Available commands')
+    
+    # Setup command
+    setup_parser = subparsers.add_parser('setup', help='Configure leave tracker')
+    setup_parser.add_argument('hours_per_period', type=float, help='Hours accrued per period')
+    setup_parser.add_argument('hours_per_day', type=float, help='Hours in a working day')
+    setup_parser.add_argument('carryover_hours', type=float, help='Hours carried over from previous year')
+    
+    # Add command
+    add_parser = subparsers.add_parser('add', help='Add leave entry')
+    add_parser.add_argument('date', help='Date in YYYY-MM-DD format')
+    add_parser.add_argument('hours', type=float, help='Hours of leave')
+    add_parser.add_argument('description', help='Description of leave')
+    
+    # Remove command
+    remove_parser = subparsers.add_parser('remove', help='Remove leave entry')
+    remove_parser.add_argument('date', help='Date in YYYY-MM-DD format')
+    
+    # List command
+    list_parser = subparsers.add_parser('list', help='List leave entries for current year')
+    
+    # Balance command
+    balance_parser = subparsers.add_parser('balance', help='Show current leave balance')
+    
+    args = parser.parse_args()
+    
+    if not args.command:
+        parser.print_help()
+        return
+    
+    if args.command == 'setup':
+        setup(args)
+    elif args.command == 'add':
+        add_leave(args)
+    elif args.command == 'remove':
+        remove_leave(args)
+    elif args.command == 'list':
+        list_leave(args)
+    elif args.command == 'balance':
+        balance(args)
+
+if __name__ == '__main__':
+    main()
