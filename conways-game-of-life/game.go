@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"strconv"
 	"time"
 )
 
@@ -62,16 +64,42 @@ func printGrid(grid [][]bool) {
 	}
 }
 
+func createGrid(size int) [][]bool {
+	grid := make([][]bool, size)
+	for i := range grid {
+		grid[i] = make([]bool, size)
+	}
+	// Create blinker pattern in center
+	center := size / 2
+	if center > 0 && center < size-1 {
+		grid[center-1][center] = true
+		grid[center][center] = true
+		grid[center+1][center] = true
+	}
+	return grid
+}
+
 func main() {
-	grid := [][]bool{
-		{false, false, false, false, false},
-		{false, false, true, false, false},
-		{false, false, true, false, false},
-		{false, false, true, false, false},
-		{false, false, false, false, false},
+	if len(os.Args) != 3 {
+		fmt.Println("Usage: go run game.go <board_size> <generations>")
+		os.Exit(1)
 	}
 
-	for i := 0; i < 10; i++ {
+	size, err := strconv.Atoi(os.Args[1])
+	if err != nil || size < 3 {
+		fmt.Println("Board size must be a number >= 3")
+		os.Exit(1)
+	}
+
+	gens, err := strconv.Atoi(os.Args[2])
+	if err != nil || gens < 1 {
+		fmt.Println("Generations must be a number >= 1")
+		os.Exit(1)
+	}
+
+	grid := createGrid(size)
+
+	for i := 0; i < gens; i++ {
 		fmt.Printf("Generation %d:\n", i)
 		printGrid(grid)
 		fmt.Println()

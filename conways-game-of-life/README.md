@@ -13,15 +13,18 @@ Conway's Game of Life is a cellular automaton devised by mathematician John Hort
 ## Running the Program
 
 ```bash
-# Build and run
+# Build and run with board size and number of generations
 go build
-./conways-game-of-life
+./conways-game-of-life <board_size> <generations>
 
 # Or run directly
-go run game.go
+go run game.go <board_size> <generations>
+
+# Example: 8x8 board for 5 generations
+go run game.go 8 5
 ```
 
-The program displays 10 generations of a simple oscillator pattern (blinker).
+The program creates a square board of the specified size with a blinker pattern in the center and runs for the specified number of generations.
 
 ## Running Tests
 

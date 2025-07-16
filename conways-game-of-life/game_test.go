@@ -75,3 +75,17 @@ func TestNextGeneration(t *testing.T) {
 		t.Errorf("nextGeneration() = %v, want %v", result, expected)
 	}
 }
+
+func TestCreateGrid(t *testing.T) {
+	grid := createGrid(3)
+	if len(grid) != 3 {
+		t.Errorf("createGrid(3) height = %d, want 3", len(grid))
+	}
+	if len(grid[0]) != 3 {
+		t.Errorf("createGrid(3) width = %d, want 3", len(grid[0]))
+	}
+	// Check center cell is alive (blinker pattern)
+	if !grid[1][1] {
+		t.Error("createGrid(3) center cell should be alive")
+	}
+}
