@@ -32,10 +32,17 @@ def save_data(data):
         json.dump(data, f, indent=2)
 
 def setup(args):
+    print("Leave Tracker Setup")
+    print("==================")
+    
+    hours_per_period = float(input("Hours accrued per period (2 periods per month): "))
+    hours_per_day = float(input("Hours in a working day: "))
+    carryover_hours = float(input("Hours carried over from previous year: "))
+    
     config = {
-        'hours_per_period': args.hours_per_period,
-        'hours_per_day': args.hours_per_day,
-        'carryover_hours': args.carryover_hours
+        'hours_per_period': hours_per_period,
+        'hours_per_day': hours_per_day,
+        'carryover_hours': carryover_hours
     }
     with open(CONFIG_FILE, 'w') as f:
         json.dump(config, f, indent=2)
@@ -127,9 +134,6 @@ def main():
     
     # Setup command
     setup_parser = subparsers.add_parser('setup', help='Configure leave tracker')
-    setup_parser.add_argument('hours_per_period', type=float, help='Hours accrued per period')
-    setup_parser.add_argument('hours_per_day', type=float, help='Hours in a working day')
-    setup_parser.add_argument('carryover_hours', type=float, help='Hours carried over from previous year')
     
     # Add command
     add_parser = subparsers.add_parser('add', help='Add leave entry')

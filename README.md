@@ -7,18 +7,13 @@ A simple command-line tool to track your annual leave allowance. The leave year 
 First, configure the tool with your leave parameters:
 
 ```bash
-python3 leave_tracker.py setup <hours_per_period> <hours_per_day> <carryover_hours>
+python3 leave_tracker.py setup
 ```
 
-**Parameters:**
-- `hours_per_period`: Hours of leave you accrue per period (there are 24 periods per year - 2 per month)
-- `hours_per_day`: Hours in your working day
-- `carryover_hours`: Hours carried over from the previous year
-
-**Example:**
-```bash
-python3 leave_tracker.py setup 7.5 7.5 40
-```
+The setup command will prompt you for:
+- Hours of leave you accrue per period (there are 24 periods per year - 2 per month)
+- Hours in your working day
+- Hours carried over from the previous year
 
 ## Commands
 
