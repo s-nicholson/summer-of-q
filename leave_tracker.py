@@ -76,7 +76,7 @@ def add_leave(args):
     }
     data[str(year)].append(entry)
     save_data(data)
-    print(f"Added {hours}h leave on {args.date}: {description}")
+    print(f"Added {hours:.2f}h leave on {args.date}: {description}")
 
 def remove_leave(args):
     data = load_data()
@@ -92,7 +92,7 @@ def remove_leave(args):
         if entry['date'] == args.date:
             removed = entries.pop(i)
             save_data(data)
-            print(f"Removed {removed['hours']}h leave on {args.date}: {removed['description']}")
+            print(f"Removed {removed['hours']:.2f}h leave on {args.date}: {removed['description']}")
             return
     
     print("No leave entry found for that date.")
@@ -115,7 +115,7 @@ def list_leave(args):
     for entry in entries:
         entry_date = datetime.strptime(entry['date'], '%Y-%m-%d').date()
         status = "PAST" if entry_date < today else "FUTURE"
-        print(f"{entry['date']} | {entry['hours']:2}h | {status:6} | {entry['description']}")
+        print(f"{entry['date']} | {entry['hours']:5.2f}h | {status:6} | {entry['description']}")
 
 def balance(args):
     config = load_config()
@@ -134,10 +134,11 @@ def balance(args):
     current_balance = annual_allowance - used_hours
     
     print(f"\nLeave Balance for {current_year}-{current_year+1}:")
-    print(f"Annual allowance: {annual_allowance}h")
-    print(f"Used so far: {used_hours}h")
-    print(f"Current balance: {current_balance}h")
-    print(f"Balance in days: {current_balance / config['hours_per_day']:.1f}")
+    print(f"Carryover from previous year: {config['carryover_hours']:.2f}h")
+    print(f"Annual allowance: {annual_allowance:.2f}h")
+    print(f"Used so far: {used_hours:.2f}h")
+    print(f"Current balance: {current_balance:.2f}h")
+    print(f"Balance in days: {current_balance / config['hours_per_day']:.2f}")
 
 def main():
     parser = argparse.ArgumentParser(description='Annual Leave Tracker')
