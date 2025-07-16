@@ -79,6 +79,23 @@ func createGrid(size int) [][]bool {
 	return grid
 }
 
+func gridsEqual(a, b [][]bool) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if len(a[i]) != len(b[i]) {
+			return false
+		}
+		for j := range a[i] {
+			if a[i][j] != b[i][j] {
+				return false
+			}
+		}
+	}
+	return true
+}
+
 func main() {
 	if len(os.Args) != 3 {
 		fmt.Println("Usage: go run game.go <board_size> <generations>")
@@ -98,11 +115,21 @@ func main() {
 	}
 
 	grid := createGrid(size)
+	var prev1, prev2 [][]bool
 
 	for i := 0; i < gens; i++ {
 		fmt.Printf("Generation %d:\n", i)
 		printGrid(grid)
 		fmt.Println()
+
+		// Check for stabilization (oscillation between 2 states)
+		if prev2 != nil && gridsEqual(grid, prev2) {
+			fmt.Println("Board stabilized - exiting early")
+			break
+		}
+
+		prev2 = prev1
+		prev1 = grid
 		grid = nextGeneration(grid)
 		time.Sleep(500 * time.Millisecond)
 	}

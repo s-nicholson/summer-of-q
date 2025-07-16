@@ -24,7 +24,7 @@ go run game.go <board_size> <generations>
 go run game.go 8 5
 ```
 
-The program creates a square board of the specified size with a blinker pattern in the center and runs for the specified number of generations.
+The program creates a square board of the specified size with a blinker pattern in the center and runs for the specified number of generations. The simulation will exit early if the board stabilizes (oscillates between two states).
 
 ## Running Tests
 
@@ -39,5 +39,9 @@ The implementation includes:
 - `countNeighbors()` - Counts live neighbors for a given cell position
 - `nextGeneration()` - Computes the next generation of the entire grid
 - `printGrid()` - Displays the grid using block characters
+- `gridsEqual()` - Compares two grids for equality to detect stabilization
+- `createGrid()` - Creates a square grid with a blinker pattern
+
+The program automatically detects when the board has stabilized (oscillating between two states) and exits early to avoid boring repetitive output.
 
 The code was developed using TDD principles, with tests written first to define the expected behavior.

@@ -89,3 +89,16 @@ func TestCreateGrid(t *testing.T) {
 		t.Error("createGrid(3) center cell should be alive")
 	}
 }
+
+func TestGridsEqual(t *testing.T) {
+	grid1 := [][]bool{{true, false}, {false, true}}
+	grid2 := [][]bool{{true, false}, {false, true}}
+	grid3 := [][]bool{{false, true}, {true, false}}
+
+	if !gridsEqual(grid1, grid2) {
+		t.Error("identical grids should be equal")
+	}
+	if gridsEqual(grid1, grid3) {
+		t.Error("different grids should not be equal")
+	}
+}
