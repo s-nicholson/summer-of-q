@@ -66,16 +66,17 @@ def add_leave(args):
     if str(year) not in data:
         data[str(year)] = []
     
+    hours = args.hours if args.hours is not None else config['hours_per_day']
     description = args.description if args.description else format_date_natural(leave_date)
     
     entry = {
         'date': args.date,
-        'hours': args.hours,
+        'hours': hours,
         'description': description
     }
     data[str(year)].append(entry)
     save_data(data)
-    print(f"Added {args.hours}h leave on {args.date}: {description}")
+    print(f"Added {hours}h leave on {args.date}: {description}")
 
 def remove_leave(args):
     data = load_data()
@@ -148,7 +149,7 @@ def main():
     # Add command
     add_parser = subparsers.add_parser('add', help='Add leave entry')
     add_parser.add_argument('date', help='Date in YYYY-MM-DD format')
-    add_parser.add_argument('hours', type=float, help='Hours of leave')
+    add_parser.add_argument('hours', type=float, nargs='?', help='Hours of leave (defaults to full day)')
     add_parser.add_argument('description', nargs='?', help='Description of leave (defaults to formatted date)')
     
     # Remove command
