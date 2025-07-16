@@ -1,0 +1,1 @@
+After making a change we should propose a git commit with a descriptive message and ask for confirmation before committing.

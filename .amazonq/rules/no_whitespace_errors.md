@@ -1,0 +1,1 @@
+When we make a change to any files, we should check that we have not introduced whitespace errors which will be detected by git.
