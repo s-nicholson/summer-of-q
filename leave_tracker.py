@@ -14,6 +14,14 @@ def get_leave_year(target_date):
         return target_date.year
     return target_date.year - 1
 
+def format_date_natural(date_obj):
+    """Format date as '20th Sept 2024'"""
+    day = date_obj.day
+    suffix = 'th' if 11 <= day <= 13 else {1: 'st', 2: 'nd', 3: 'rd'}.get(day % 10, 'th')
+    month = date_obj.strftime('%b')
+    year = date_obj.year
+    return f"{day}{suffix} {month} {year}"
+
 def load_config():
     if not CONFIG_FILE.exists():
         print("No configuration found. Run 'setup' command first.")
@@ -58,14 +66,16 @@ def add_leave(args):
     if str(year) not in data:
         data[str(year)] = []
     
+    description = args.description if args.description else format_date_natural(leave_date)
+    
     entry = {
         'date': args.date,
         'hours': args.hours,
-        'description': args.description
+        'description': description
     }
     data[str(year)].append(entry)
     save_data(data)
-    print(f"Added {args.hours}h leave on {args.date}: {args.description}")
+    print(f"Added {args.hours}h leave on {args.date}: {description}")
 
 def remove_leave(args):
     data = load_data()
@@ -139,7 +149,7 @@ def main():
     add_parser = subparsers.add_parser('add', help='Add leave entry')
     add_parser.add_argument('date', help='Date in YYYY-MM-DD format')
     add_parser.add_argument('hours', type=float, help='Hours of leave')
-    add_parser.add_argument('description', help='Description of leave')
+    add_parser.add_argument('description', nargs='?', help='Description of leave (defaults to formatted date)')
     
     # Remove command
     remove_parser = subparsers.add_parser('remove', help='Remove leave entry')

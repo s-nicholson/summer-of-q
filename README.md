@@ -21,12 +21,15 @@ The setup command will prompt you for:
 Record a new leave entry and subtract from your balance:
 
 ```bash
-python3 leave_tracker.py add <date> <hours> "<description>"
+python3 leave_tracker.py add <date> <hours> ["<description>"]
 ```
 
-**Example:**
+Description is optional - if not provided, defaults to formatted date (e.g. "25th Dec 2024").
+
+**Examples:**
 ```bash
 python3 leave_tracker.py add 2024-12-25 7.5 "Christmas Day"
+python3 leave_tracker.py add 2024-12-26 7.5
 ```
 
 ### Remove Leave Entry
