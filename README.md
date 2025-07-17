@@ -19,6 +19,17 @@ Amazon Q Developer is an AI-powered assistant that helps with software developme
 
 This repository serves as a practical exploration of these capabilities through real-world development scenarios.
 
+## Amazon Q Rules
+
+This project uses the `.amazonq/rules` directory to define custom rules that guide Amazon Q's behavior when working with this codebase. These rules are automatically loaded as context when using Amazon Q in this repository.
+
+Current rules include:
+- **Documentation is Important** - Ensures documentation stays up-to-date with code changes
+- **No Whitespace Errors** - Prevents introducing whitespace errors in git
+- **Prompt Then Commit** - Requires confirmation before committing changes
+
+Rules are defined as markdown files in the `.amazonq/rules` directory. When Amazon Q is used within this repository, it automatically reads these rules and incorporates them into its responses and recommendations.
+
 ## Getting Started
 
 Each project directory contains its own README with specific setup and usage instructions. Navigate to the individual project folders to explore the different experiments and implementations.
