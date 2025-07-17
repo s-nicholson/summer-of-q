@@ -6,6 +6,7 @@ This project is a series of tasks and experiments designed to explore and demons
 
 - [**leave-tracker**](./leave-tracker/README.md) - A command-line tool for tracking annual leave allowance with interactive setup and natural date formatting
 - [**conways-game-of-life**](./conways-game-of-life/README.md) - A Go implementation of Conway's Game of Life cellular automaton built using Test-Driven Development
+- [**devographics**](./devographics/README.md) - Notes summarizing the Devographics project, an open-source platform powering developer surveys
 
 ## About Amazon Q Developer
 
