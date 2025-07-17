@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
 	"strconv"
 	"time"
@@ -79,6 +80,17 @@ func createGrid(size int) [][]bool {
 	return grid
 }
 
+func createRandomGrid(size int, probability float64) [][]bool {
+	grid := make([][]bool, size)
+	for i := range grid {
+		grid[i] = make([]bool, size)
+		for j := range grid[i] {
+			grid[i][j] = rand.Float64() < probability
+		}
+	}
+	return grid
+}
+
 func gridsEqual(a, b [][]bool) bool {
 	if len(a) != len(b) {
 		return false
@@ -114,7 +126,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	grid := createGrid(size)
+	rand.Seed(time.Now().UnixNano())
+	grid := createRandomGrid(size, 0.3)
 	var prev1, prev2 [][]bool
 
 	for i := 0; i < gens; i++ {

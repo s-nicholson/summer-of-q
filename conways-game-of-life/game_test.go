@@ -102,3 +102,25 @@ func TestGridsEqual(t *testing.T) {
 		t.Error("different grids should not be equal")
 	}
 }
+
+func TestCreateRandomGrid(t *testing.T) {
+	grid := createRandomGrid(5, 0.3)
+	if len(grid) != 5 {
+		t.Errorf("createRandomGrid(5, 0.3) height = %d, want 5", len(grid))
+	}
+	if len(grid[0]) != 5 {
+		t.Errorf("createRandomGrid(5, 0.3) width = %d, want 5", len(grid[0]))
+	}
+	// Check that some cells are alive (probability should make this very likely)
+	aliveCount := 0
+	for _, row := range grid {
+		for _, cell := range row {
+			if cell {
+				aliveCount++
+			}
+		}
+	}
+	if aliveCount == 0 {
+		t.Error("createRandomGrid should have some alive cells with 0.3 probability")
+	}
+}
