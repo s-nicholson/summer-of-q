@@ -2,6 +2,8 @@
 
 A simple command-line tool to track your annual leave allowance. The leave year runs from September 1st to August 31st.
 
+[![Tests](https://img.shields.io/badge/tests-pytest-green)](test_leave_tracker.py)
+
 ## Setup
 
 First, configure the tool with your leave parameters:
@@ -77,3 +79,28 @@ Configuration and leave data are stored in your home directory:
 ## Leave Year
 
 The tool automatically handles the leave year cycle (September 1st - August 31st). Entries are grouped by leave year, not calendar year.
+
+## Development
+
+### Testing
+
+The project uses pytest for testing. To run the tests:
+
+1. Set up a virtual environment and install dependencies:
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
+   ```
+
+2. Run the tests:
+   ```bash
+   pytest -v test_leave_tracker.py
+   ```
+
+Alternatively, use the provided script:
+```bash
+./run_tests.sh
+```
+
+This will create a virtual environment if it doesn't exist, install dependencies, and run the tests.
