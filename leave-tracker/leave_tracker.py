@@ -36,23 +36,27 @@ class LeaveTracker:
         if not self.config_path.exists():
             raise FileNotFoundError("No configuration found. Run 'setup' command first.")
         
-        with open(self.config_path) as f:
-            config = json.load(f)
-        
-        # Handle legacy config format
-        if 'years' not in config:
-            config = {
-                'years': {
-                    str(self.get_leave_year(date.today())): {
-                        'hours_per_period': config['hours_per_period'],
-                        'hours_per_day': config['hours_per_day'],
-                        'carryover_hours': config['carryover_hours']
+        try:
+            with open(self.config_path) as f:
+                config = json.load(f)
+            
+            # Handle legacy config format
+            if 'years' not in config:
+                config = {
+                    'years': {
+                        str(self.get_leave_year(date.today())): {
+                            'hours_per_period': config['hours_per_period'],
+                            'hours_per_day': config['hours_per_day'],
+                            'carryover_hours': config['carryover_hours']
+                        }
                     }
                 }
-            }
-            self.save_config(config)
-        
-        return config
+                self.save_config(config)
+            
+            return config
+        except json.JSONDecodeError:
+            # If the file is empty or invalid JSON, raise FileNotFoundError
+            raise FileNotFoundError("Invalid configuration file. Run 'setup' command first.")
     
     def save_config(self, config: Dict) -> None:
         """Save configuration to file"""
@@ -63,8 +67,13 @@ class LeaveTracker:
         """Load leave data from file"""
         if not self.data_path.exists():
             return {}
-        with open(self.data_path) as f:
-            return json.load(f)
+        
+        try:
+            with open(self.data_path) as f:
+                return json.load(f)
+        except json.JSONDecodeError:
+            # If the file is empty or invalid JSON, return empty dict
+            return {}
     
     def save_data(self, data: Dict) -> None:
         """Save leave data to file"""

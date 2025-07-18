@@ -6,7 +6,7 @@ from datetime import date, datetime
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 
-from leave_tracker_refactored import LeaveTracker
+from leave_tracker import LeaveTracker
 
 
 @pytest.fixture
@@ -123,7 +123,7 @@ def test_load_and_save_data(tracker, sample_data):
 def test_setup(tracker):
     """Test setup method"""
     # Run setup with a fixed date for testing
-    with patch('leave_tracker_refactored.date') as mock_date:
+    with patch('leave_tracker.date') as mock_date:
         mock_date.today.return_value = date(2024, 10, 1)
         config = tracker.setup(7.0, 7.5, 15.0)
     
@@ -141,7 +141,7 @@ def test_add_leave_with_defaults(tracker, sample_config):
     tracker.save_config(sample_config)
     
     # Add leave with minimal parameters
-    with patch('leave_tracker_refactored.date') as mock_date:
+    with patch('leave_tracker.date') as mock_date:
         mock_date.today.return_value = date(2024, 12, 1)
         entry = tracker.add_leave('2024-12-25')
     
@@ -272,7 +272,7 @@ def mock_tracker():
 @pytest.fixture
 def cli(mock_tracker):
     """Create a CLI instance with mocked tracker"""
-    from leave_tracker_refactored import LeaveTrackerCLI
+    from leave_tracker import LeaveTrackerCLI
     return LeaveTrackerCLI(tracker=mock_tracker)
 
 
@@ -339,7 +339,7 @@ def test_cli_list_command(cli, mock_tracker):
     
     # Call command
     with patch('builtins.print') as mock_print:
-        with patch('leave_tracker_refactored.date') as mock_date:
+        with patch('leave_tracker.date') as mock_date:
             mock_date.today.return_value = date(2024, 10, 1)
             cli.list_command(args)
     
