@@ -65,9 +65,10 @@ Check your current leave balance:
 python3 leave_tracker.py balance
 ```
 
-Shows:
+Shows in a nicely formatted display:
 - Annual allowance
 - Hours used so far
+- Days used so far
 - Current balance in hours and days
 
 ## Data Storage

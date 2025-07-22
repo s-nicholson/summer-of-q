@@ -254,6 +254,7 @@ def test_calculate_balance(tracker, sample_config, sample_data):
     assert balance['used_hours'] == 15.0  # Sum of hours in sample_data
     assert balance['current_balance'] == balance['annual_allowance'] - balance['used_hours']
     assert balance['balance_days'] == balance['current_balance'] / 7.5
+    assert balance['used_days'] == balance['used_hours'] / 7.5  # New field for days used
 
 
 def test_calculate_balance_missing_config(tracker):
@@ -356,6 +357,7 @@ def test_cli_balance_command(cli, mock_tracker):
         'carryover_hours': 15.0,
         'annual_allowance': 183.0,
         'used_hours': 15.0,
+        'used_days': 2.0,
         'current_balance': 168.0,
         'balance_days': 22.4
     }
@@ -370,3 +372,8 @@ def test_cli_balance_command(cli, mock_tracker):
     # Verify tracker was called correctly
     mock_tracker.calculate_balance.assert_called_once()
     assert mock_print.call_count > 0
+    
+    # Check that the output contains the days used information
+    calls = [call[0][0] for call in mock_print.call_args_list if isinstance(call[0][0], str)]
+    days_used_output = any('Days used' in call for call in calls)
+    assert days_used_output, "Output should include 'Days used' information"

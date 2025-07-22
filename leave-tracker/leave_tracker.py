@@ -186,6 +186,7 @@ class LeaveTracker:
             'carryover_hours': year_config['carryover_hours'],
             'annual_allowance': annual_allowance,
             'used_hours': used_hours,
+            'used_days': used_hours / year_config['hours_per_day'],
             'current_balance': current_balance,
             'balance_days': current_balance / year_config['hours_per_day']
         }
@@ -254,12 +255,17 @@ class LeaveTrackerCLI:
             balance = self.tracker.calculate_balance()
             year = balance['year']
             
-            print(f"\nLeave Balance for {year}-{year+1}:")
-            print(f"Carryover from previous year: {balance['carryover_hours']:.2f}h")
-            print(f"Annual allowance: {balance['annual_allowance']:.2f}h")
-            print(f"Used so far: {balance['used_hours']:.2f}h")
-            print(f"Current balance: {balance['current_balance']:.2f}h")
-            print(f"Balance in days: {balance['balance_days']:.2f}")
+            print(f"\n╔═══════════════════════════════════════╗")
+            print(f"║  Leave Balance for {year}-{year+1}  ║")
+            print(f"╠═══════════════════════════════════════╣")
+            print(f"║  Carryover:       {balance['carryover_hours']:6.2f} hours      ║")
+            print(f"║  Annual allowance: {balance['annual_allowance']:6.2f} hours      ║")
+            print(f"║  Used so far:      {balance['used_hours']:6.2f} hours      ║")
+            print(f"║  Days used:        {balance['used_days']:6.2f} days        ║")
+            print(f"╠═══════════════════════════════════════╣")
+            print(f"║  Current balance:  {balance['current_balance']:6.2f} hours      ║")
+            print(f"║  Balance in days:  {balance['balance_days']:6.2f} days        ║")
+            print(f"╚═══════════════════════════════════════╝")
         except (ValueError, FileNotFoundError) as e:
             print(str(e))
     
