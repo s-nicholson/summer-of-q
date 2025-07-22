@@ -10,6 +10,9 @@ Devographics is an open-source project that powers developer surveys like the St
 
 - [Devographics Features](./devographics-features.md) - Overview of the main features and components of the Devographics platform
 - [Deployment and Persistence](./devographics-deployment-and-persistence.md) - Information about deployment configurations and data persistence
+- [Project Structure](./devographics-project-structure.md) - Comprehensive guide to the monorepo structure, applications, and development workflow
+- [Development Setup](./devographics-development-setup.md) - Step-by-step guide for setting up a local development environment
+- [Application Interactions](./devographics-application-interactions.md) - Detailed explanation of how applications interact and data flows through the system
 
 ## Additional Resources
 
