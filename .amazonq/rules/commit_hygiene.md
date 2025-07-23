@@ -2,9 +2,9 @@ Git commits should be descriptive and should focus on the "why" of a change, rat
 
 Ideally, a commit should follow the format:
 ```
-Title
+Title (limited to 50 characters)
 
-Body
+Multiline Body (limited to 80 characters)
 ```
 
 Title should be short to allow better use of the oneline view of git history.
