@@ -228,6 +228,72 @@ class LeaveTrackerCLI:
         else:
             print("No leave entry found for that date.")
     
+    def _print_box(self, title, headers=None, rows=None, footer_rows=None):
+        """Helper method to print consistent box-style output
+        
+        Args:
+            title: Title of the box
+            headers: List of column headers (optional)
+            rows: List of rows, each row is a list of values
+            footer_rows: List of rows for the footer section (optional)
+        """
+        # Calculate the width needed for each column
+        col_widths = []
+        
+        # Initialize with header widths
+        if headers:
+            col_widths = [len(str(h)) for h in headers]
+            
+        # Update with row content widths
+        if rows:
+            for row in rows:
+                for i, cell in enumerate(row):
+                    if i >= len(col_widths):
+                        col_widths.append(len(str(cell)))
+                    else:
+                        col_widths[i] = max(col_widths[i], len(str(cell)))
+        
+        # Calculate total width (sum of column widths + separators)
+        total_width = sum(col_widths) + (3 * (len(col_widths) - 1)) + 6  # 3 spaces between cols, 3 spaces padding on each side
+        
+        # Print the box
+        print(f"\n╔{'═' * total_width}╗")
+        print(f"║{title.center(total_width)}║")
+        
+        if headers:
+            print(f"╠{'═' * total_width}╣")
+            header_str = "║   "
+            for i, header in enumerate(headers):
+                header_str += f"{str(header):<{col_widths[i]}}"
+                if i < len(headers) - 1:
+                    header_str += "   "
+            header_str += "   ║"
+            print(header_str)
+            
+        if rows:
+            print(f"╠{'═' * total_width}╣")
+            for row in rows:
+                row_str = "║   "
+                for i, cell in enumerate(row):
+                    row_str += f"{str(cell):<{col_widths[i]}}"
+                    if i < len(row) - 1:
+                        row_str += "   "
+                row_str += "   ║"
+                print(row_str)
+        
+        if footer_rows:
+            print(f"╠{'═' * total_width}╣")
+            for row in footer_rows:
+                row_str = "║   "
+                for i, cell in enumerate(row):
+                    row_str += f"{str(cell):<{col_widths[i]}}"
+                    if i < len(row) - 1:
+                        row_str += "   "
+                row_str += "   ║"
+                print(row_str)
+                
+        print(f"╚{'═' * total_width}╝")
+
     def list_command(self, args):
         """Handle list command"""
         try:
@@ -238,14 +304,22 @@ class LeaveTrackerCLI:
                 print("No leave entries for current year.")
                 return
             
-            print(f"\nLeave entries for {current_year}-{current_year+1}:")
-            print("-" * 50)
+            title = f"Leave entries for {current_year}-{current_year+1}"
+            headers = ["Date", "Hours", "Status", "Description"]
             
+            rows = []
             today = date.today()
             for entry in entries:
                 entry_date = datetime.strptime(entry['date'], '%Y-%m-%d').date()
                 status = "PAST" if entry_date < today else "FUTURE"
-                print(f"{entry['date']} | {entry['hours']:5.2f}h | {status:6} | {entry['description']}")
+                rows.append([
+                    entry['date'],
+                    f"{entry['hours']:.2f}h",
+                    status,
+                    entry['description']
+                ])
+            
+            self._print_box(title, headers, rows)
         except FileNotFoundError as e:
             print(str(e))
     
@@ -255,17 +329,20 @@ class LeaveTrackerCLI:
             balance = self.tracker.calculate_balance()
             year = balance['year']
             
-            print(f"\n╔═══════════════════════════════════════╗")
-            print(f"║  Leave Balance for {year}-{year+1}  ║")
-            print(f"╠═══════════════════════════════════════╣")
-            print(f"║  Carryover:       {balance['carryover_hours']:6.2f} hours      ║")
-            print(f"║  Annual allowance: {balance['annual_allowance']:6.2f} hours      ║")
-            print(f"║  Used so far:      {balance['used_hours']:6.2f} hours      ║")
-            print(f"║  Days used:        {balance['used_days']:6.2f} days        ║")
-            print(f"╠═══════════════════════════════════════╣")
-            print(f"║  Current balance:  {balance['current_balance']:6.2f} hours      ║")
-            print(f"║  Balance in days:  {balance['balance_days']:6.2f} days        ║")
-            print(f"╚═══════════════════════════════════════╝")
+            title = f"Leave Balance for {year}-{year+1}"
+            rows = [
+                ["Carryover:", f"{balance['carryover_hours']:.2f} hours"],
+                ["Annual allowance:", f"{balance['annual_allowance']:.2f} hours"],
+                ["Used so far:", f"{balance['used_hours']:.2f} hours"],
+                ["Days used:", f"{balance['used_days']:.2f} days"]
+            ]
+            
+            footer_rows = [
+                ["Current balance:", f"{balance['current_balance']:.2f} hours"],
+                ["Balance in days:", f"{balance['balance_days']:.2f} days"]
+            ]
+            
+            self._print_box(title, None, rows, footer_rows)
         except (ValueError, FileNotFoundError) as e:
             print(str(e))
     
