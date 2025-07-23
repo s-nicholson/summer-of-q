@@ -1,93 +1,24 @@
-# Devographics Development Environment Setup
+# Devographics Development Setup
 
-This guide provides instructions for setting up a local development environment for the Devographics project. It covers the necessary prerequisites, configuration steps, and common development workflows.
+This guide covers setting up a local development environment for the Devographics project.
 
 ## Prerequisites
 
-Before starting development on the Devographics project, ensure you have the following installed:
+- **Node.js** (v16+)
+- **Docker** (for MongoDB and Redis)
+- **Git**
+- **pnpm** (`npm install -g pnpm`)
 
-1. **Node.js** - Version 16.x or later recommended
-2. **Docker** - For running MongoDB and Redis locally
-3. **Git** - For version control
-4. **pnpm** - Package manager used by the project (can be installed via `npm install -g pnpm`)
+## Quick Start
 
-## Initial Setup
-
-1. **Clone the repository**:
+1. **Clone the repository**
    ```bash
    git clone https://github.com/Devographics/Monorepo.git
    cd Monorepo
    ```
 
-2. **Create environment files**:
-   Each application requires its own environment configuration. Create the following `.env` files:
-
-   **API (.env file in /api directory)**:
-   ```
-   # MongoDB Configuration
-   MONGO_URI=mongodb://localhost:27017
-   MONGO_PRIVATE_DB=devographics_private
-   MONGO_PUBLIC_DB=devographics_public
-   
-   # Redis Configuration
-   REDIS_URL=http://localhost:8474
-   
-   # Authentication
-   SECRET_KEY=your_secret_key
-   TOKEN_SECRET=your_token_secret
-   ENCRYPTION_KEY=your_encryption_key
-   
-   # Survey Configuration
-   # Use either local directory or GitHub path
-   SURVEYS_DIR=../surveys
-   # GITHUB_PATH_SURVEYS=Devographics/surveys
-   
-   # Localization
-   # Use either local directory or GitHub path
-   LOCALES_DIR=../locales
-   # GITHUB_PATH_LOCALES=Devographics/locales
-   
-   # Email Configuration
-   SMTP_HOST=smtp.example.com
-   SMTP_PORT=587
-   SMTP_USER=your_smtp_user
-   SMTP_PASS=your_smtp_password
-   EMAIL_FROM=surveys@example.com
-   ```
-
-   **Surveyform (.env.local file in /surveyform directory)**:
-   ```
-   # API URL
-   NEXT_PUBLIC_API_URL=http://localhost:4000
-   
-   # Authentication
-   NEXT_PUBLIC_ENCRYPTION_KEY=your_encryption_key
-   
-   # Survey Configuration
-   NEXT_PUBLIC_SURVEYS_DIR=../surveys
-   # NEXT_PUBLIC_GITHUB_PATH_SURVEYS=Devographics/surveys
-   
-   # Localization
-   NEXT_PUBLIC_LOCALES_DIR=../locales
-   # NEXT_PUBLIC_GITHUB_PATH_LOCALES=Devographics/locales
-   ```
-
-   **Results (.env.development file in /results directory)**:
-   ```
-   # API URL
-   GATSBY_API_URL=http://localhost:4000
-   
-   # Survey Configuration
-   GATSBY_SURVEYS_DIR=../surveys
-   # GATSBY_GITHUB_PATH_SURVEYS=Devographics/surveys
-   
-   # Localization
-   GATSBY_LOCALES_DIR=../locales
-   # GATSBY_GITHUB_PATH_LOCALES=Devographics/locales
-   ```
-
-3. **Set up Docker services**:
-   Create a `docker-compose.yml` file in the root directory:
+2. **Set up Docker services**
+   Create `docker-compose.yml` in the root directory:
    ```yaml
    version: '3'
    services:
@@ -113,95 +44,77 @@ Before starting development on the Devographics project, ensure you have the fol
          - redis
    ```
 
-4. **Start the Docker services**:
+3. **Start Docker services**
    ```bash
    docker-compose up -d
    ```
 
-## Setting Up Individual Applications
+4. **Create environment files**
+   See the Environment Configuration section below
 
-### API
-
-1. Navigate to the API directory:
+5. **Start applications**
    ```bash
-   cd api
+   # API
+   cd api && pnpm install && pnpm dev
+   
+   # In a new terminal - Surveyform
+   cd surveyform && pnpm install && pnpm dev
+   
+   # In a new terminal - Results
+   cd results && pnpm install && pnpm dev
    ```
 
-2. Install dependencies:
-   ```bash
-   pnpm install
-   ```
+## Environment Configuration
 
-3. Start the development server:
-   ```bash
-   pnpm dev
-   ```
+Create these environment files with the following essential variables:
 
-The API will be available at http://localhost:4000.
-
-### Surveyform
-
-1. Navigate to the Surveyform directory:
-   ```bash
-   cd surveyform
-   ```
-
-2. Install dependencies:
-   ```bash
-   pnpm install
-   ```
-
-3. Start the development server:
-   ```bash
-   pnpm dev
-   ```
-
-The Surveyform application will be available at http://localhost:3000.
-
-### Results
-
-1. Navigate to the Results directory:
-   ```bash
-   cd results
-   ```
-
-2. Install dependencies:
-   ```bash
-   pnpm install
-   ```
-
-3. Start the development server:
-   ```bash
-   pnpm dev
-   ```
-
-The Results application will be available at http://localhost:8000.
-
-## Working with Survey Data
-
-### Local Survey Definitions
-
-For local development, you can create a `surveys` directory at the root level:
-
-```bash
-mkdir -p surveys/state_of_js/2023
+### API (.env in /api)
+```
+MONGO_URI=mongodb://localhost:27017
+MONGO_PRIVATE_DB=devographics_private
+MONGO_PUBLIC_DB=devographics_public
+REDIS_URL=http://localhost:8474
+SECRET_KEY=your_secret_key
+TOKEN_SECRET=your_token_secret
+ENCRYPTION_KEY=your_encryption_key
+SURVEYS_DIR=../surveys
+LOCALES_DIR=../locales
 ```
 
-Create a basic survey definition file:
+### Surveyform (.env.local in /surveyform)
+```
+NEXT_PUBLIC_API_URL=http://localhost:4000
+NEXT_PUBLIC_ENCRYPTION_KEY=your_encryption_key
+NEXT_PUBLIC_SURVEYS_DIR=../surveys
+NEXT_PUBLIC_LOCALES_DIR=../locales
+```
+
+### Results (.env.development in /results)
+```
+GATSBY_API_URL=http://localhost:4000
+GATSBY_SURVEYS_DIR=../surveys
+GATSBY_LOCALES_DIR=../locales
+```
+
+## Local Survey Data
+
+Create basic survey and locale files for development:
+
+```bash
+# Create survey directory
+mkdir -p surveys/state_of_js/2023
+
+# Create locale directory
+mkdir -p locales/en-US
+```
+
+Create a basic survey definition:
 ```yaml
 # surveys/state_of_js/2023/survey.yml
 id: state_of_js
 name: State of JavaScript
 year: 2023
 status: preview
-```
-
-### Local Locale Files
-
-For localization, create a `locales` directory at the root level:
-
-```bash
-mkdir -p locales/en-US
 ```
 
 Create a basic locale file:
@@ -214,68 +127,43 @@ Create a basic locale file:
 }
 ```
 
-## Common Development Tasks
+## Application URLs
+
+- API: http://localhost:4000
+- Surveyform: http://localhost:3000
+- Results: http://localhost:8000
+
+## Common Tasks
 
 ### Running Tests
-
-For Surveyform:
 ```bash
-cd surveyform
-pnpm test
-```
+# Unit tests
+cd surveyform && pnpm test
 
-For end-to-end tests:
-```bash
-cd surveyform
-pnpm cypress:open
+# End-to-end tests
+cd surveyform && pnpm cypress:open
 ```
 
 ### Building for Production
-
-For API:
 ```bash
-cd api
-pnpm build
-```
-
-For Surveyform:
-```bash
-cd surveyform
-pnpm build
-```
-
-For Results:
-```bash
-cd results
-pnpm build
+cd api && pnpm build
+cd surveyform && pnpm build
+cd results && pnpm build
 ```
 
 ## Troubleshooting
 
-### MongoDB Connection Issues
+### MongoDB Issues
+- Check Docker status: `docker ps`
+- Verify MongoDB logs: `docker logs monorepo_mongodb_1`
+- Confirm connection string in environment variables
 
-If you encounter MongoDB connection issues:
-1. Ensure Docker containers are running: `docker ps`
-2. Check MongoDB logs: `docker logs monorepo_mongodb_1`
-3. Verify connection string in environment variables
-
-### Redis Connection Issues
-
-If Redis is not connecting:
-1. Check if Redis containers are running: `docker ps`
-2. Verify Redis HTTP proxy is working: `curl http://localhost:8474/ping`
-3. Check Redis logs: `docker logs monorepo_redis_1`
+### Redis Issues
+- Check Redis status: `docker ps`
+- Test Redis HTTP proxy: `curl http://localhost:8474/ping`
+- Check Redis logs: `docker logs monorepo_redis_1`
 
 ### API Connection Issues
-
-If frontend applications cannot connect to the API:
-1. Ensure API is running: `curl http://localhost:4000`
-2. Check API environment variables
-3. Verify frontend applications are using the correct API URL
-
-## Additional Resources
-
-- [MongoDB Documentation](https://docs.mongodb.com/)
-- [Redis Documentation](https://redis.io/documentation)
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Gatsby Documentation](https://www.gatsbyjs.com/docs/)
+- Verify API is running: `curl http://localhost:4000`
+- Check API environment variables
+- Confirm frontend applications use correct API URL

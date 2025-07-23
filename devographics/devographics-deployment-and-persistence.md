@@ -1,65 +1,38 @@
-# Devographics Project Summary
+# Devographics Deployment & Persistence
 
-## Project Overview
+## Deployment Architecture
 
-Devographics is a monorepo project that runs surveys like State of JS and State of CSS. It consists of multiple applications that work together to collect, process, and display survey data.
+Devographics uses a distributed hosting approach:
 
-## Deployment Strategy & Hosting
+| Application | Platform | Purpose | URL |
+|-------------|----------|---------|-----|
+| API | Render.com | Backend for all applications | - |
+| GraphiQL | Netlify | GraphQL IDE for API testing | https://api.devographics.com |
+| Surveyform | Vercel | Next.js app for collecting responses | https://survey.devographics.com |
+| Results | Netlify | Gatsby app for displaying results | https://2022.stateofjs.com (etc.) |
+| Static Assets | Netlify | Shared resources | https://assets.devographics.com |
 
-The project uses a distributed hosting approach across multiple platforms:
+The Surveyadmin application currently runs locally only.
 
-1. **API**: 
-   - Hosted on Render.com
-   - Serves as the backend for all applications
+## Data Storage
 
-2. **GraphiQL**: 
-   - Hosted on Netlify
-   - Provides a GraphQL IDE for testing API queries
-   - Available at https://api.devographics.com
+### MongoDB
 
-3. **Surveyform**: 
-   - Hosted on Vercel
-   - Next.js TypeScript application for collecting survey responses
-   - Available at https://survey.devographics.com
+- **Hosting**: MongoDB Atlas (production), Docker (development)
+- **Databases**:
+  - `MONGO_PRIVATE_DB`: Stores respondent data and raw responses
+  - `MONGO_PUBLIC_DB`: Stores processed, anonymized data
+- **Local Development**: Data stored in `.mongo` folder
 
-4. **Results**: 
-   - Hosted on Netlify
-   - Gatsby TypeScript application for displaying survey results
-   - Multiple domains for different surveys (e.g., https://2022.stateofjs.com)
-   - Also configured for deployment on Render.com
+### Redis
 
-5. **Surveyadmin**:
-   - Currently only runs locally
-   - Used for survey management and data processing
+- **Hosting**: Upstash (production), Docker with serverless-redis-http (development)
+- **Purpose**: Caching API query results
+- **Configuration**: HTTP-based interface in both environments
 
-6. **Static Assets**:
-   - Hosted on Netlify
-   - Available at https://assets.devographics.com
+## Local Development
 
-## Data Persistence
-
-The project uses two main databases for data persistence:
-
-1. **MongoDB**:
-   - Hosted on MongoDB Atlas for production
-   - Stores both raw and normalized survey data
-   - Uses two separate databases:
-     - `MONGO_PRIVATE_DB`: Stores private respondent data
-     - `MONGO_PUBLIC_DB`: Stores public, processed data
-   - For local development, MongoDB runs in Docker (version 5.0.19)
-   - Local data is stored in a `.mongo` folder in the monorepo
-
-2. **Redis**:
-   - Hosted on Upstash for production
-   - Used for caching API query results
-   - For local development, Redis runs in Docker with a serverless-redis-http proxy to simulate Upstash's HTTP-based interface
-
-## Local Development Setup
-
-For local development, the project uses:
-- Docker Compose to run MongoDB and Redis locally
-- A Justfile for common development commands
-- Environment variables stored in `.env` files for configuration
-- Optional local directories for surveys, locales, and entities data
-
-The project is designed to be flexible, allowing developers to use either local files or remote APIs for development, with appropriate environment variable configuration.
+- **Docker Compose**: Runs MongoDB and Redis locally
+- **Justfile**: Common development commands
+- **Environment Variables**: Configuration via `.env` files
+- **Data Sources**: Configurable to use local files or remote APIs
