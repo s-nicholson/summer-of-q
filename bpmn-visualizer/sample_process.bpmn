@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:activiti="http://activiti.org/bpmn"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             targetNamespace="http://www.example.org/sample">
+
+  <process id="sampleProcess" name="Sample Activiti Process" isExecutable="true">
+    
+    <startEvent id="startEvent1" name="Start"/>
+    
+    <serviceTask id="serviceTask1" name="Process Data" 
+                 activiti:class="com.example.ProcessDataDelegate">
+      <extensionElements>
+        <activiti:formProperty id="inputData" name="Input Data" type="string" required="true"/>
+        <activiti:formProperty id="priority" name="Priority" type="enum">
+          <activiti:value id="high" name="High"/>
+          <activiti:value id="medium" name="Medium"/>
+          <activiti:value id="low" name="Low"/>
+        </activiti:formProperty>
+      </extensionElements>
+    </serviceTask>
+    
+    <exclusiveGateway id="exclusiveGateway1" name="Check Result"/>
+    
+    <userTask id="userTask1" name="Manual Review" 
+              activiti:assignee="reviewer" 
+              activiti:candidateGroups="managers,supervisors">
+      <extensionElements>
+        <activiti:formProperty id="approved" name="Approved" type="boolean" required="true"/>
+        <activiti:formProperty id="comments" name="Comments" type="string"/>
+      </extensionElements>
+    </userTask>
+    
+    <serviceTask id="serviceTask2" name="Auto Approve" 
+                 activiti:expression="${autoApprovalService.approve(execution)}"/>
+    
+    <exclusiveGateway id="exclusiveGateway2" name="Merge"/>
+    
+    <serviceTask id="serviceTask3" name="Send Notification" 
+                 activiti:class="com.example.NotificationDelegate"/>
+    
+    <endEvent id="endEvent1" name="End"/>
+    
+    <!-- Sequence Flows -->
+    <sequenceFlow id="flow1" sourceRef="startEvent1" targetRef="serviceTask1"/>
+    
+    <sequenceFlow id="flow2" sourceRef="serviceTask1" targetRef="exclusiveGateway1"/>
+    
+    <sequenceFlow id="flow3" name="Needs Review" sourceRef="exclusiveGateway1" targetRef="userTask1">
+      <conditionExpression xsi:type="tFormalExpression">${needsReview == true}</conditionExpression>
+    </sequenceFlow>
+    
+    <sequenceFlow id="flow4" name="Auto Process" sourceRef="exclusiveGateway1" targetRef="serviceTask2">
+      <conditionExpression xsi:type="tFormalExpression">${needsReview == false}</conditionExpression>
+    </sequenceFlow>
+    
+    <sequenceFlow id="flow5" sourceRef="userTask1" targetRef="exclusiveGateway2"/>
+    
+    <sequenceFlow id="flow6" sourceRef="serviceTask2" targetRef="exclusiveGateway2"/>
+    
+    <sequenceFlow id="flow7" sourceRef="exclusiveGateway2" targetRef="serviceTask3"/>
+    
+    <sequenceFlow id="flow8" sourceRef="serviceTask3" targetRef="endEvent1"/>
+    
+  </process>
+  
+</definitions>
