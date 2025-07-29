@@ -54,10 +54,35 @@ python bpmn_visualizer.py sample_process.bpmn
 
 ## Testing
 
-Run the test suite:
+Run the test suite using pytest:
 ```bash
-python test_parser.py
+# Run all tests
+pytest
+
+# Run with verbose output
+pytest -v
+
+# Run specific test file
+pytest test_parser.py
+
+# Run specific test
+pytest test_parser.py::test_service_task_parsing
+
+# Run with coverage report
+pytest --cov=bpmn_parser --cov=bpmn_visualizer --cov-report=term-missing
+
+# Run only parser tests
+pytest test_parser.py -v
+
+# Run only visualizer tests  
+pytest test_visualizer.py -v
 ```
+
+The test suite includes:
+- **Parser tests**: XML parsing, Activiti metadata extraction, element type detection
+- **Visualizer tests**: Diagram generation, label building, metadata display
+- **Parametrized tests**: Testing multiple element types efficiently
+- **Mock tests**: Testing visualization without generating actual files
 
 ## BPMN Elements Supported
 
